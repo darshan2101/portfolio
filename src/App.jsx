@@ -30,7 +30,7 @@ export default function Portfolio() {
     {
       title: 'StorageDNA',
       role: 'Backend & AI/ML Engineer (Remote - USA)',
-      period: 'April 2023 - Present',
+      period: 'April 2024 - Present',
       description: 'AI-powered storage management platform serving enterprise clients. Revolutionized their approach to media processing.',
       highlights: [
         'Developed AI/ML pipelines for metadata extraction using AWS, Azure, and GCP computer vision APIs',
