@@ -30,7 +30,7 @@ export default function Portfolio() {
     {
       title: 'StorageDNA',
       role: 'Backend & AI/ML Engineer (Remote - USA)',
-      period: 'May 2023 - Present',
+      period: 'April 2023 - Present',
       description: 'AI-powered storage management platform serving enterprise clients. Revolutionized their approach to media processing.',
       highlights: [
         'Developed AI/ML pipelines for metadata extraction using AWS, Azure, and GCP computer vision APIs',
@@ -45,7 +45,7 @@ export default function Portfolio() {
     {
       title: 'Healthray',
       role: 'Backend Engineer',
-      period: 'Apr 2022 - Present',
+      period: 'January 2023 - Present',
       description: 'Healthcare SaaS platform serving thousands of providers with mission-critical availability.',
       highlights: [
         'Architected robust backend infrastructure with Node.js and Ruby on Rails',
