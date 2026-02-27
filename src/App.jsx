@@ -1,34 +1,65 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Github, Linkedin, Mail, Code2, Cloud, Database, Cpu, Terminal, ExternalLink, ChevronRight, Server, Layout, GraduationCap, Layers, FlaskConical } from 'lucide-react';
 import { SiNodedotjs, SiRubyonrails, SiMysql, SiMongodb, SiAmazonwebservices, SiGooglecloud, SiPython, SiDocker } from 'react-icons/si';
 import { VscAzure } from 'react-icons/vsc';
 
 function AnimatedCounter({ value, suffix = '', duration = 2 }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const [hasTriggered, setHasTriggered] = useState(false);
   const [count, setCount] = useState(0);
 
+  // Use native IntersectionObserver — far more reliable on mobile than
+  // framer-motion useInView with a negative rootMargin.
   useEffect(() => {
-    if (!isInView) return;
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasTriggered) {
+          setHasTriggered(true);
+        }
+      },
+      {
+        // 10 % of the element visible is enough to fire — works on all
+        // viewport sizes including small mobile screens.
+        threshold: 0.1,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasTriggered]);
+
+  useEffect(() => {
+    if (!hasTriggered) return;
     const target = parseInt(value);
     if (isNaN(target)) { setCount(value); return; }
-    const steps = 40;
-    const increment = target / steps;
+    const steps = 50;
+    const stepDuration = (duration * 1000) / steps;
     let current = 0;
     const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
+      current += 1;
+      // Ease-out: progress faster at start, slower at end
+      const progress = current / steps;
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const displayed = Math.round(eased * target);
+      setCount(displayed);
+      if (current >= steps) {
         setCount(target);
         clearInterval(timer);
-      } else {
-        setCount(Math.floor(current));
       }
-    }, duration * 1000 / steps);
+    }, stepDuration);
     return () => clearInterval(timer);
-  }, [isInView, value, duration]);
+  }, [hasTriggered, value, duration]);
 
-  return <span ref={ref}>{isInView ? `${count}${suffix}` : `0${suffix}`}</span>;
+  return (
+    <span ref={ref}>
+      {hasTriggered ? `${count}${suffix}` : `0${suffix}`}
+    </span>
+  );
 }
 
 export default function Portfolio() {
@@ -147,16 +178,24 @@ export default function Portfolio() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2
+      }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 30, opacity: 0, scale: 0.98, filter: 'blur(8px)' },
     visible: {
       y: 0,
       opacity: 1,
-      transition: { type: "spring", stiffness: 100 }
+      scale: 1,
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1] // Cinematic ease-out
+      }
     }
   };
 
@@ -288,19 +327,27 @@ export default function Portfolio() {
                 </a>
               </motion.div>
 
-              <motion.div variants={itemVariants} className="pt-6 sm:pt-10 flex items-center justify-start gap-6 sm:gap-8 text-slate-500 text-xs sm:text-sm font-medium">
-                <div className="flex flex-col">
-                  <span className="text-xl sm:text-2xl font-display font-bold text-white"><AnimatedCounter value="3" suffix="+" /></span>
-                  <span>Years Exp.</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xl sm:text-2xl font-display font-bold text-white"><AnimatedCounter value="10" suffix="+" /></span>
-                  <span>Projects</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xl sm:text-2xl font-display font-bold text-white"><AnimatedCounter value="100" suffix="%" /></span>
-                  <span>Dedication</span>
-                </div>
+              <motion.div
+                variants={itemVariants}
+                className="pt-6 sm:pt-10 inline-flex items-stretch gap-0 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden text-xs sm:text-sm font-medium w-full max-w-xs sm:max-w-sm"
+              >
+                {[
+                  { val: '3', suf: '+', label: 'Years Exp.' },
+                  { val: '10', suf: '+', label: 'Projects' },
+                  { val: '100', suf: '%', label: 'Dedication' },
+                ].map((item, i, arr) => (
+                  <div
+                    key={item.label}
+                    className={`flex-1 flex flex-col items-center justify-center py-3 sm:py-4 gap-0.5 ${i < arr.length - 1 ? 'border-r border-white/10' : ''}`}
+                  >
+                    <span className="text-2xl sm:text-3xl font-display font-extrabold text-white leading-none tracking-tight">
+                      <AnimatedCounter value={item.val} suffix={item.suf} />
+                    </span>
+                    <span className="text-slate-400 text-[10px] sm:text-xs font-semibold tracking-wide mt-1">
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
               </motion.div>
             </motion.div>
 
@@ -349,15 +396,26 @@ export default function Portfolio() {
           </div>
         </section>
 
-        {/* Expertise Section */}
-        <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative bg-white/[0.02] border-y border-white/5">
+        <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative bg-white/[0.01] border-y border-white/5 overflow-hidden">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-10 sm:mb-16 lg:mb-20 text-center">
-              <h2 className="text-sm font-bold tracking-widest text-cyan-400 uppercase mb-3 sm:mb-4">Core Competencies</h2>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white">Technical Arsenal</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              className="mb-10 sm:mb-16 lg:mb-20 text-center"
+            >
+              <h2 className="text-sm font-bold tracking-[0.2em] text-cyan-400 uppercase mb-3 sm:mb-4">Core Competencies</h2>
+              <p className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight">Technical Arsenal</p>
+            </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+            >
               {[
                 { title: 'Backend', icon: <Server className="w-6 h-6" />, skills: skills.backend, color: 'from-cyan-400 to-cyan-600', shadow: 'hover:shadow-cyan-500/20' },
                 { title: 'Cloud & DevOps', icon: <Cloud className="w-6 h-6" />, skills: skills.devops, color: 'from-blue-400 to-blue-600', shadow: 'hover:shadow-blue-500/20' },
@@ -365,78 +423,83 @@ export default function Portfolio() {
                 { title: 'Testing & Tools', icon: <FlaskConical className="w-6 h-6" />, skills: skills.testing, color: 'from-indigo-400 to-indigo-600', shadow: 'hover:shadow-indigo-500/20' }
               ].map((category, idx) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
+                  variants={itemVariants}
                   key={idx}
-                  className={`group relative p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/5 border border-white/10 hover:bg-white/[0.07] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${category.shadow}`}
+                  className={`group shimmer-effect relative p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/[0.03] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${category.shadow}`}
                 >
-                  <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 flex items-center justify-center bg-gradient-to-br ${category.color} text-white shadow-lg`}>
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 flex items-center justify-center bg-gradient-to-br ${category.color} text-white shadow-lg relative z-10`}>
                     {category.icon}
                   </div>
-                  <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-4 sm:mb-6">{category.title}</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <h3 className="text-lg sm:text-xl font-display font-bold text-white mb-4 sm:mb-6 leading-tight relative z-10">{category.title}</h3>
+                  <div className="flex flex-wrap gap-2 relative z-10">
                     {category.skills.map(skill => (
-                      <span key={skill} className="px-3 py-1.5 bg-slate-900 border border-white/10 rounded-lg text-sm text-slate-300 group-hover:border-white/20 transition-colors">
+                      <span key={skill} className="px-3 py-1.5 bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-lg text-[13px] text-slate-300 group-hover:border-white/20 group-hover:text-white transition-all">
                         {skill}
                       </span>
                     ))}
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section >
 
-        {/* Featured Work */}
         <section id="projects" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-10 sm:mb-16 lg:mb-20">
-              <h2 className="text-sm font-bold tracking-widest text-blue-400 uppercase mb-3 sm:mb-4">Selected Work</h2>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white">Impactful Projects</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              className="mb-10 sm:mb-16 lg:mb-20"
+            >
+              <h2 className="text-sm font-bold tracking-[0.2em] text-blue-400 uppercase mb-3 sm:mb-4">Selected Work</h2>
+              <p className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight">Impactful Projects</p>
+            </motion.div>
 
-            <div className="space-y-8 sm:space-y-12">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="space-y-8 sm:space-y-12"
+            >
               {projects.map((project, idx) => (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true, margin: "-100px" }}
+                  variants={itemVariants}
                   key={idx}
-                  className="group grid md:grid-cols-5 gap-5 sm:gap-8 bg-white/5 border border-white/10 rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] p-5 sm:p-8 md:p-12 hover:bg-white/[0.08] transition-all duration-500 relative overflow-hidden"
+                  className="group grid md:grid-cols-5 gap-5 sm:gap-8 bg-white/[0.03] border border-white/10 rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] p-5 sm:p-8 md:p-12 hover:bg-white/[0.06] transition-all duration-700 relative overflow-hidden shimmer-effect"
                 >
-                  {/* Glowing hover effect */}
-                  <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-gradient-to-br ${project.color} opacity-0 group-hover:opacity-5 blur-[100px] transition-opacity duration-700 pointer-events-none`} />
+                  <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-gradient-to-br ${project.color} opacity-0 group-hover:opacity-10 blur-[120px] transition-all duration-1000 pointer-events-none`} />
 
                   <div className="md:col-span-2 flex flex-col justify-between z-10">
                     <div>
-                      <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${project.color} text-white flex items-center justify-center mb-4 sm:mb-8 shadow-2xl`}>
+                      <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${project.color} text-white flex items-center justify-center mb-4 sm:mb-8 shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
                         {project.icon}
                       </div>
-                      <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-white mb-2">{project.title}</h3>
+                      <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">{project.title}</h3>
                       <p className="text-cyan-400 font-medium text-sm sm:text-base mb-4 sm:mb-6">{project.role}</p>
                     </div>
                     <div className="hidden md:block">
-                      <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">{project.period}</p>
+                      <p className="text-sm text-slate-500 font-medium uppercase tracking-[0.1em]">{project.period}</p>
                     </div>
                   </div>
 
                   <div className="md:col-span-3 z-10">
-                    <p className="text-base sm:text-lg text-slate-300 mb-5 sm:mb-8 leading-relaxed max-w-2xl">{project.description}</p>
+                    <p className="text-base sm:text-lg text-slate-300 mb-5 sm:mb-8 leading-relaxed max-w-2xl font-light">{project.description}</p>
 
                     <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-10">
                       {project.highlights.map((highlight, i) => (
-                        <li key={i} className="flex items-start gap-3 sm:gap-4 text-slate-400 group-hover:text-slate-300 transition-colors text-sm sm:text-base">
-                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 sm:mt-2.5 flex-shrink-0" />
+                        <li key={i} className="flex items-start gap-3 sm:gap-4 text-slate-400 group-hover:text-slate-200 transition-colors text-sm sm:text-base">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 sm:mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
                           <span className="leading-relaxed">{highlight}</span>
                         </li>
                       ))}
                     </ul>
 
-                    <div className="flex flex-wrap gap-2 pt-6 border-t border-white/10">
+                    <div className="flex flex-wrap gap-2 pt-6 border-t border-white/5">
                       {project.tech.map(tech => (
-                        <span key={tech} className="px-4 py-1.5 bg-black/40 backdrop-blur-md border border-white/5 rounded-full text-xs font-medium text-slate-300">
+                        <span key={tech} className="px-4 py-1.5 bg-black/40 backdrop-blur-md border border-white/5 rounded-full text-[11px] font-bold tracking-wider text-slate-400 uppercase">
                           {tech}
                         </span>
                       ))}
@@ -444,52 +507,60 @@ export default function Portfolio() {
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div >
         </section >
 
-        {/* Experience Timeline */}
-        <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 bg-white/[0.02] border-y border-white/5">
+        <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 bg-white/[0.01] border-y border-white/5 relative">
           <div className="max-w-4xl mx-auto">
-            <div className="mb-10 sm:mb-16 lg:mb-20 text-center">
-              <h2 className="text-sm font-bold tracking-widest text-indigo-400 uppercase mb-3 sm:mb-4">Journey</h2>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white">Professional Experience</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+              className="mb-10 sm:mb-16 lg:mb-20 text-center"
+            >
+              <h2 className="text-sm font-bold tracking-[0.2em] text-indigo-400 uppercase mb-3 sm:mb-4">Journey</h2>
+              <p className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight">Professional Experience</p>
+            </motion.div>
 
             <div className="relative">
-              {/* Vertical line connecting experiences */}
-              <div className="absolute left-0 md:left-[50%] top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/0 via-cyan-500/50 to-cyan-500/0 md:-ml-px"></div>
+              <div className="absolute left-0 md:left-[50%] top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/0 via-cyan-500/30 to-cyan-500/0 md:-ml-px"></div>
 
-              {experience.map((exp, idx) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  key={idx}
-                  className="relative w-full md:w-1/2 md:pr-12 md:text-right md:ml-0 md:first:mt-0 mt-16 group pl-8 md:pl-0"
-                >
-                  {/* Timeline dot */}
-                  <div className="absolute left-0 md:left-full top-6 w-4 h-4 bg-slate-950 border-2 border-cyan-400 rounded-full md:-ml-[8px] -translate-x-[15px] md:translate-x-0 group-hover:bg-cyan-400 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.6)] transition-all z-10"></div>
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+              >
+                {experience.map((exp, idx) => (
+                  <motion.div
+                    variants={itemVariants}
+                    key={idx}
+                    className="relative w-full md:w-1/2 md:pr-12 md:text-right md:ml-0 md:first:mt-0 mt-16 group pl-8 md:pl-0"
+                  >
+                    <div className="absolute left-0 md:left-full top-6 w-4 h-4 bg-slate-950 border-2 border-cyan-400 rounded-full md:-ml-[8px] -translate-x-[15px] md:translate-x-0 group-hover:bg-cyan-400 group-hover:scale-125 group-hover:shadow-[0_0_20px_rgba(34,211,238,0.8)] transition-all z-10"></div>
 
-                  <div className="bg-white/5 border border-white/10 p-5 sm:p-8 rounded-2xl sm:rounded-3xl hover:bg-white/[0.08] transition-all">
-                    <span className="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-400 text-xs font-bold tracking-wider rounded-md mb-3 sm:mb-4 uppercase">
-                      {exp.period}
-                    </span>
-                    <h3 className="text-xl sm:text-2xl font-display font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">{exp.role}</h3>
-                    <p className="text-base sm:text-lg text-slate-400 font-medium mb-3 sm:mb-4">{exp.company}</p>
-                    <p className="text-sm sm:text-base text-slate-300 mb-4 sm:mb-6 leading-relaxed text-left md:text-right">{exp.description}</p>
+                    <div className="shimmer-effect bg-white/[0.03] border border-white/10 p-5 sm:p-8 rounded-2xl sm:rounded-3xl hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500">
+                      <span className="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-400 text-[10px] font-bold tracking-widest rounded-md mb-3 sm:mb-4 uppercase">
+                        {exp.period}
+                      </span>
+                      <h3 className="text-xl sm:text-2xl font-display font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors uppercase tracking-tight">{exp.role}</h3>
+                      <p className="text-base sm:text-lg text-slate-400 font-medium mb-3 sm:mb-4">{exp.company}</p>
+                      <p className="text-sm sm:text-base text-slate-300 mb-4 sm:mb-6 leading-relaxed text-left md:text-right font-light">{exp.description}</p>
 
-                    <ul className="space-y-3 text-left">
-                      {exp.achievements.map((achievement, i) => (
-                        <li key={i} className="flex items-start md:items-center md:flex-row-reverse gap-2 sm:gap-3 text-slate-400 text-xs sm:text-sm">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 md:mt-0 flex-shrink-0" />
-                          <span className="leading-relaxed md:text-right">{achievement}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </motion.div>
-              ))}
+                      <ul className="space-y-3 text-left">
+                        {exp.achievements.map((achievement, i) => (
+                          <li key={i} className="flex items-start md:items-center md:flex-row-reverse gap-2 sm:gap-3 text-slate-400 text-xs sm:text-sm group-hover:text-slate-200 transition-colors">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 md:mt-0 flex-shrink-0" />
+                            <span className="leading-relaxed md:text-right">{achievement}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
             </div>
           </div>
         </section >
