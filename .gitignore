@@ -13,6 +13,14 @@ dist-ssr
 *.local
 public/additionals*
 
+# Private documents — public/ deploys to the site root, keep these out
+public/cv.md
+public/mail.pdf
+public/Darshan_Babariya_Resume_old_faang.pdf
+public/Darshan_Babariya_Resume_2.pdf
+public/Darshan_Babariya_Resume_Updated.docx
+portfolio.tar.gz
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
