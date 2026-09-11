@@ -4,20 +4,23 @@ Professional portfolio showcasing backend engineering, DevOps, AI/ML, and cloud 
 
 ## 🚀 Features
 
-- ✅ Modern, responsive React design
-- ✅ Showcases StorageDNA & Healthray projects
-- ✅ Highlights DevOps, AI/ML, and Cloud skills
-- ✅ Direct links to LinkedIn & GitHub
-- ✅ Optimized for remote job opportunities
-- ✅ Dark theme with smooth animations
+- ✅ Persistent WebGL "Liquid Monolith" scene (React Three Fiber) that reacts to cursor and scroll
+- ✅ Shader-driven portrait that ripples and turns toward the pointer
+- ✅ Liquid glass UI with real SVG refraction in Chromium and a blur fallback elsewhere
+- ✅ Sticky project stack, scroll-drawn experience timeline, tilt cards with spotlight borders
+- ✅ Quality tiers (`off` / `low` / `high`) chosen per device; respects `prefers-reduced-motion`
+- ✅ Content from a single source of truth (`src/data/profile.js`)
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React 18
-- **Build Tool:** Vite
-- **Styling:** Tailwind CSS
-- **Icons:** Lucide React
+- **Frontend:** React 19, Vite 5, Tailwind CSS 3
+- **3D:** three.js, @react-three/fiber, @react-three/drei, @react-three/postprocessing
+- **Motion:** Framer Motion 13, Lenis smooth scroll, maath easing
+- **Icons:** Lucide, react-icons
+- **Tests:** Vitest, Testing Library, jsdom (`npm test`)
 - **Deployment:** Vercel
+
+Debug the 3D tier with `?tier=off`, `?tier=low`, or `?tier=high` in the URL.
 
 ## 📦 Installation
 

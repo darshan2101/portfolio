@@ -1,30 +1,42 @@
 {
   "name": "darshan-portfolio",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@react-three/postprocessing": "^3.1.1",
     "@vercel/speed-insights": "^1.3.1",
-    "framer-motion": "^12.34.3",
-    "lucide-react": "^0.263.1",
-    "pdf-parse": "^2.4.5",
-    "pdf2json": "^4.0.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.5.0"
+    "framer-motion": "^13.2.0",
+    "lenis": "^1.3.26",
+    "lucide-react": "^1.44.0",
+    "maath": "^0.10.8",
+    "postprocessing": "^6.39.5",
+    "react": "~19.2.0",
+    "react-dom": "~19.2.0",
+    "react-icons": "^5.7.0",
+    "three": "^0.186.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "jsdom": "^26.1.0",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vitest": "^3.2.4"
   }
 }
