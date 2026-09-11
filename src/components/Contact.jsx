@@ -7,7 +7,7 @@ import { profile } from '../data/profile';
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-hidden">
+    <section id="contact" data-scene="contact" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-cyan-950/20" />
 
       <div className="max-w-4xl mx-auto text-center relative z-10">

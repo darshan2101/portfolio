@@ -10,7 +10,7 @@ export default function Recognition() {
   const rest = recognition.filter((r) => !r.featured);
 
   return (
-    <section className="py-16 sm:py-24 lg:py-28 px-4 sm:px-6 relative overflow-hidden">
+    <section id="recognition" data-scene="recognition" className="py-16 sm:py-24 lg:py-28 px-4 sm:px-6 relative overflow-hidden">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

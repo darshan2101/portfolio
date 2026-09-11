@@ -20,7 +20,7 @@ const accents = {
 
 export default function Skills() {
   return (
-    <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative bg-white/[0.01] border-y border-white/5 overflow-hidden">
+    <section id="skills" data-scene="skills" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative bg-white/[0.01] border-y border-white/5 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

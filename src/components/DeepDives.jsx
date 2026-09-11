@@ -6,7 +6,7 @@ import { deepDives, sideProjects } from '../data/profile';
 
 export default function DeepDives() {
   return (
-    <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative">
+    <section id="deepdives" data-scene="deepdives" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10 sm:mb-16 lg:mb-20">
           <h2 className="text-sm font-bold tracking-widest text-emerald-400 uppercase mb-3 sm:mb-4">Deep Dives</h2>

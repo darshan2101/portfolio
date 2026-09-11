@@ -21,9 +21,9 @@ const orbitIcons = [
   { Icon: SiRubyonrails, color: 'text-[#CC0000]', delay: 4.5, pos: 'bottom-[2%] right-[45%]' },
 ];
 
-export default function Hero({ parallaxY }) {
+export default function Hero({ parallaxY, tier }) {
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center pt-20 pb-10 px-4 sm:px-6">
+    <section id="home" data-scene="hero" className="min-h-screen flex items-center justify-center pt-20 pb-10 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
         <motion.div
           initial="hidden"

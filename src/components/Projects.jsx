@@ -13,7 +13,7 @@ const icons = {
 
 export default function Projects() {
   return (
-    <section id="projects" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative">
+    <section id="projects" data-scene="projects" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

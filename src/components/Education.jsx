@@ -6,7 +6,7 @@ import { education } from '../data/profile';
 
 export default function Education() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white/[0.02] border-y border-white/5">
+    <section id="education" data-scene="education" className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white/[0.02] border-y border-white/5">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10 sm:mb-16 text-center">
           <h2 className="text-sm font-bold tracking-widest text-amber-400 uppercase mb-3 sm:mb-4">Education</h2>
