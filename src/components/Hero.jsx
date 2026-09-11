@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Trophy } from 'lucide-react';
-import { SiNodedotjs, SiRubyonrails, SiMysql, SiMongodb, SiAmazonwebservices, SiGooglecloud, SiPython, SiDocker, SiTypescript } from 'react-icons/si';
+import { SiNodedotjs, SiRubyonrails, SiMysql, SiMongodb, SiGooglecloud, SiPython, SiDocker, SiTypescript } from 'react-icons/si';
 import { VscAzure } from 'react-icons/vsc';
+import { FaAws as SiAmazonwebservices } from 'react-icons/fa';
 import AnimatedCounter from './AnimatedCounter';
 import { containerVariants, itemVariants } from '../lib/motion';
 import { profile, heroStats, heroHighlights } from '../data/profile';
