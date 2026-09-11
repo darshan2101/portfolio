@@ -6,20 +6,20 @@
 
 **Architecture:** A `React.lazy` `<Scene/>` renders a fixed, pointer-transparent canvas behind the 2D content. A mutable `sceneState` module is written by DOM listeners (Lenis scroll, pointer, section observers) and read inside `useFrame`, so scrolling never re-renders React. Glass surfaces come from two components: `LiquidGlass` (SVG displacement `backdrop-filter` in Chromium, blur fallback elsewhere) and the `.glass-soft` utility for cards. Every section keeps its data from `src/data/profile.js`.
 
-**Tech Stack:** React 19.3, Vite 5, Tailwind 3.4, Framer Motion 13, three 0.186, @react-three/fiber 9.7, @react-three/drei 10.7, @react-three/postprocessing 3.1, maath 0.10, lenis 1.3, Vitest 3 + jsdom + Testing Library.
+**Tech Stack:** React 19.2, Vite 5, Tailwind 3.4, Framer Motion 13, three 0.186, @react-three/fiber 9.7, @react-three/drei 10.7, @react-three/postprocessing 3.1, maath 0.10, lenis 1.3, Vitest 3 + jsdom + Testing Library.
 
 **Spec:** `docs/superpowers/specs/2026-09-11-liquid-monolith-3d-revamp-design.md`
 
 ## Global Constraints
 
-- React and react-dom `^19.3.0`; fiber `^9.7.0`; drei `^10.7.8`; three `^0.186.0`; postprocessing `^6.39.5`; vitest `^3.2.4` (Vite stays `^5.0.8`).
+- React and react-dom `~19.2.0` (fiber 9.7 requires React below 19.3); fiber `^9.7.0`; drei `^10.7.8`; three `^0.186.0`; postprocessing `^6.39.5`; vitest `^3.2.4` (Vite stays `^5.0.8`).
 - Content strings come from `src/data/profile.js` and are not edited. The only new copy is the hero role line and heading accent words listed in the tasks.
 - Palette tokens exactly: `--bg #06070b`, `--bg-2 #0b0d14`, `--fg #e9ebf2`, `--fg-muted #9aa0b4`, `--fg-dim #5d6378`, `--accent #8fe3ff`, `--accent-2 #c9a3ff`, `--award #f5c451`.
 - Fonts: Bricolage Grotesque (display), Instrument Serif italic (accent word), Inter (body), JetBrains Mono (labels).
 - At most six `LiquidGlass` instances on the page (nav, hero CTA, hero stats, contact panel = 4).
 - Canvas is `aria-hidden`, `pointer-events: none`, `z-index: 0`; content is `z-index: 10`.
 - Quality tiers `off | low | high` as defined in `src/lib/quality.js`; `off` renders `StaticFallback`.
-- Brand icons (GitHub, LinkedIn) come from `react-icons/si`, never from lucide.
+- Brand icons (GitHub, LinkedIn) come from `react-icons/fi` (`FiGithub`, `FiLinkedin`; simple-icons has no LinkedIn), never from lucide.
 - Commit after every task with the trailer `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`. Never `git add -A`; the untracked `UI-TOOLS-RESEARCH.md` and `public/linkedin_agent/` stay uncommitted.
 - Run tests with `npm test` (vitest run). Run the dev server only through the in-app browser preview, never via a bare Bash `npm run dev`.
 
@@ -112,7 +112,7 @@
 
 **Files:** Replace `src/components/Nav.jsx`; create `src/components/Preloader.jsx`; mount in App; tests for both.
 
-**Produces:** `scrollToHash(e, href)` (Lenis `scrollTo(el, { offset: -96, duration: 1.2 })` else `scrollIntoView smooth`; `history.replaceState`). Nav: fixed header, centred `LiquidGlass as="nav" radius=999 strength=18 blur=14` pill (max-w-3xl) with DB mark + first name, links Work `#projects` / Experience `#experience` / Contact `#contact` (md+), GitHub/LinkedIn (`SiGithub`, `SiLinkedin`), "Let's talk" mailto, menu button (`aria-expanded`, `aria-controls="mobile-menu"`, labels Open/Close menu) opening a `glass-soft` sheet via `AnimatePresence`; padding shrinks when `isScrolled`. Preloader: `enabled` prop; skipped when `sessionStorage['dgb-seen'] === '1'`; rAF loop where progress = 100 if `sceneState.ready`, else `max(creep = min(90, elapsed/25), sceneState.progress*0.9)`; dismiss at 100 or after 2500 ms; writes the session flag; name in display type + mono percentage + hairline bar; `AnimatePresence` fade-out 0.6 s.
+**Produces:** `scrollToHash(e, href)` (Lenis `scrollTo(el, { offset: -96, duration: 1.2 })` else `scrollIntoView smooth`; `history.replaceState`). Nav: fixed header, centred `LiquidGlass as="nav" radius=999 strength=18 blur=14` pill (max-w-3xl) with DB mark + first name, links Work `#projects` / Experience `#experience` / Contact `#contact` (md+), GitHub/LinkedIn (`FiGithub`, `FiLinkedin`), "Let's talk" mailto, menu button (`aria-expanded`, `aria-controls="mobile-menu"`, labels Open/Close menu) opening a `glass-soft` sheet via `AnimatePresence`; padding shrinks when `isScrolled`. Preloader: `enabled` prop; skipped when `sessionStorage['dgb-seen'] === '1'`; rAF loop where progress = 100 if `sceneState.ready`, else `max(creep = min(90, elapsed/25), sceneState.progress*0.9)`; dismiss at 100 or after 2500 ms; writes the session flag; name in display type + mono percentage + hairline bar; `AnimatePresence` fade-out 0.6 s.
 
 - [ ] Nav tests (links, menu toggle, `scrollToHash` lenis vs native); Preloader tests (disabled, seen, dismisses when ready); implement; mount `<Preloader enabled={tier !== 'off'} />` before Nav; test/build; browser check (preloader → page, nav refraction, smooth anchor scroll, mobile menu); commit `feat: floating liquid-glass nav and asset-aware preloader`.
 
@@ -144,7 +144,7 @@
 
 **Files:** Replace `Projects.jsx`, `Experience.jsx`; tests.
 
-**Produces:** Projects: heading `"Selected work" / "Projects with *real* weight"`; `ProjectCard({ project, index, total })` wrapper `div.sticky` with `top: calc(96px + index*16px)`; `useScroll({ target, offset: ['start start', 'end start'] })` → `scale 1→0.94`, `opacity 1→0.5` (not on the last card; 1→1 under reduced motion); `glass-soft` article `md:grid-cols-5` (icon plate, mono `0i / 0N`, title, role, GitHub link with `SiGithub` when `project.link`, period; description, highlights with `/` markers, `.chip` tech). Experience: heading `"Journey" / "Professional *experience*"` centred, `bg-bg-2/60`; timeline with a static hairline plus a `motion.div` line `scaleY` from `useSpring(useScroll({ target, offset: ['start 80%', 'end 60%'] }).scrollYProgress)`; `ol` of `glass-soft` cards with node dots that glow on hover, period chip, mono location, role, company, description, achievements.
+**Produces:** Projects: heading `"Selected work" / "Projects with *real* weight"`; `ProjectCard({ project, index, total })` wrapper `div.sticky` with `top: calc(96px + index*16px)`; `useScroll({ target, offset: ['start start', 'end start'] })` → `scale 1→0.94`, `opacity 1→0.5` (not on the last card; 1→1 under reduced motion); `glass-soft` article `md:grid-cols-5` (icon plate, mono `0i / 0N`, title, role, GitHub link with `FiGithub` when `project.link`, period; description, highlights with `/` markers, `.chip` tech). Experience: heading `"Journey" / "Professional *experience*"` centred, `bg-bg-2/60`; timeline with a static hairline plus a `motion.div` line `scaleY` from `useSpring(useScroll({ target, offset: ['start 80%', 'end 60%'] }).scrollYProgress)`; `ol` of `glass-soft` cards with node dots that glow on hover, period chip, mono location, role, company, description, achievements.
 
 - [ ] Tests (titles + `01 / 03`, GitHub link; roles + companies); implement; test/build; browser scroll check; commit `feat: sticky glass project stack and scroll-drawn experience timeline`.
 
@@ -152,7 +152,7 @@
 
 **Files:** Replace `Contact.jsx`; annotate `src/lib/motion.js`; update `README.md` features/tech stack; test.
 
-**Produces:** Contact: `section#contact[data-scene=contact]`, `LiquidGlass radius=40 strength=26 blur=20` panel, eyebrow "Contact", heading `Let's build something <em>extraordinary</em>.`, existing paragraph, buttons "Say hello" (mailto, solid), LinkedIn and GitHub (`glass-soft`, `SiLinkedin`/`SiGithub`). motion.js comment noting `MotionConfig reducedMotion="user"`. README: features (WebGL Monolith, shader portrait, liquid glass, sticky stack, tiers) and stack (React 19, R3F, drei, postprocessing, Framer Motion 13, Lenis, maath, Vitest) plus the `?tier=` debug note.
+**Produces:** Contact: `section#contact[data-scene=contact]`, `LiquidGlass radius=40 strength=26 blur=20` panel, eyebrow "Contact", heading `Let's build something <em>extraordinary</em>.`, existing paragraph, buttons "Say hello" (mailto, solid), LinkedIn and GitHub (`glass-soft`, `FiLinkedin`/`FiGithub`). motion.js comment noting `MotionConfig reducedMotion="user"`. README: features (WebGL Monolith, shader portrait, liquid glass, sticky stack, tiers) and stack (React 19, R3F, drei, postprocessing, Framer Motion 13, Lenis, maath, Vitest) plus the `?tier=` debug note.
 
 - [ ] Test (mailto/LinkedIn/GitHub hrefs, `<em>extraordinary</em>`); implement; `npm test`; `npm run build` and confirm the three chunk ≤ 350 KB gzip and nothing outside `src/three/` imports three (`grep -rn "@react-three\|from 'three'" src | grep -v src/three/` empty); browser: desktop full scroll, 375 px, `?tier=off`, `?tier=low`, no console errors; commit `feat: liquid-glass contact panel, motion notes, README for the 3D revamp`.
 - [ ] `git push -u origin feat/liquid-monolith-3d-revamp` and `gh pr create --base master` titled "feat: Liquid Monolith 3D portfolio revamp" with summary, spec/plan links, test plan, and the `🤖 Generated with [Claude Code](https://claude.com/claude-code)` footer.

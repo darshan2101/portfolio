@@ -24,7 +24,7 @@ Non-goals: page routing, CMS, blog, contact form backend, custom cursor, WebGPU 
 
 | Package | From | To | Why |
 |---|---|---|---|
-| react, react-dom | 18.2 | 19.3 | Required by fiber v9 / drei v10 |
+| react, react-dom | 18.2 | 19.2 | Required by fiber v9 / drei v10 (fiber 9.7 caps React below 19.3) |
 | framer-motion | 12.34 | 13.2 | Current, supports React 19 |
 | three | — | 0.186 | Renderer |
 | @react-three/fiber | — | 9.7 | React renderer for three |

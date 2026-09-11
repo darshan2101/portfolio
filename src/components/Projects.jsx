@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cloud, Database, Workflow, Github } from 'lucide-react';
+import { Cloud, Database, Workflow } from 'lucide-react';
+import { FiGithub as Github } from 'react-icons/fi';
 import { containerVariants, itemVariants, viewportOnce } from '../lib/motion';
 import { featuredProjects } from '../data/profile';
 
