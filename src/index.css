@@ -3,53 +3,125 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg: 6 7 11;
+    --bg-2: 11 13 20;
+    --fg: 233 235 242;
+    --fg-muted: 154 160 180;
+    --fg-dim: 93 99 120;
+    --accent: 143 227 255;
+    --accent-2: 201 163 255;
+    --award: 245 196 81;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-edge: rgba(255, 255, 255, 0.14);
+    color-scheme: dark;
+  }
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
 
-  body {
-    @apply bg-slate-950 text-slate-100 antialiased;
-  }
-
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Lenis owns smoothing when active; native smooth scroll must yield. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  body {
+    @apply bg-bg text-fg antialiased font-sans;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.25);
+    color: rgb(var(--fg));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 }
 
-@layer utilities {
-  .animate-blob {
-    animation: blob 7s infinite;
+@layer components {
+  /* Soft glass: cheap, identical everywhere. Used by every card. */
+  .glass-soft {
+    position: relative;
+    background: var(--glass);
+    border: 1px solid var(--glass-edge);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+      0 20px 60px -30px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
   }
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-  .animation-delay-4000 {
-    animation-delay: 4s;
+  .glass-soft::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 40%);
   }
 
-  @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
-    100% { transform: translate(0px, 0px) scale(1); }
+  /* Liquid glass shell: LiquidGlass.jsx sets the backdrop-filter itself. */
+  .liquid-glass {
+    position: relative;
+    isolation: isolate;
+    contain: paint;
+    background: var(--glass);
+    border: 1px solid var(--glass-edge);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+      0 10px 40px -20px rgba(0, 0, 0, 0.9);
   }
-
-  .glass-card {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-white/10;
+  .liquid-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 45%);
   }
-
-  /* Inline SVG noise texture — replaces the dead grainy-gradients.vercel.app dependency */
-  .bg-noise {
+  .liquid-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0.03;
+    mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
   }
 
+  .eyebrow {
+    @apply font-mono text-[11px] sm:text-xs uppercase tracking-[0.22em] text-accent;
+  }
+
+  .chip {
+    @apply font-mono text-[11px] tracking-wide px-2.5 py-1 rounded-md border border-white/10 bg-white/[0.04] text-fg-muted;
+  }
+
+  /* Legacy helpers still referenced by sections until they are restyled. */
+  .glass-card {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/10;
+  }
   .shimmer-effect {
     position: relative;
     overflow: hidden;
   }
-
   .shimmer-effect::after {
     content: "";
     position: absolute;
@@ -57,17 +129,30 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-      45deg,
-      transparent,
-      rgba(255, 255, 255, 0.03),
-      transparent
-    );
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
     transform: rotate(45deg);
     transition: 0.5s;
   }
-
   .shimmer-effect:hover::after {
     left: 120%;
+  }
+}
+
+@layer utilities {
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  }
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
   }
 }
