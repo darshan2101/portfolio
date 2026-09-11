@@ -1,4 +1,6 @@
 // Shared framer-motion variants — keep entrance choreography consistent across sections.
+// Reduced motion is handled globally by <MotionConfig reducedMotion="user"> in App.jsx,
+// which drops the transform/blur parts of these variants and keeps the opacity fade.
 
 export const containerVariants = {
   hidden: { opacity: 0 },
