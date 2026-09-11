@@ -1,67 +1,55 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import { MapPin } from 'lucide-react';
+import SectionHeading from './SectionHeading';
 import { containerVariants, itemVariants, viewportOnce } from '../lib/motion';
 import { experience } from '../data/profile';
 
 export default function Experience() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 80%', 'end 60%'] });
+  const scaleY = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.4 });
+
   return (
-    <section id="experience" data-scene="experience" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 bg-white/[0.01] border-y border-white/5 relative">
+    <section id="experience" data-scene="experience" className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-bg-2/60">
       <div className="max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.8 }}
-          className="mb-10 sm:mb-16 lg:mb-20 text-center"
-        >
-          <h2 className="text-sm font-bold tracking-[0.2em] text-indigo-400 uppercase mb-3 sm:mb-4">Journey</h2>
-          <p className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight">Professional Experience</p>
-        </motion.div>
-
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/0 via-cyan-500/30 to-cyan-500/0"></div>
-
+        <SectionHeading eyebrow="Journey" title="Professional *experience*" align="center" className="mb-14 sm:mb-20" />
+        <div ref={ref} className="relative">
+          <div className="absolute left-0 top-0 bottom-0 w-px bg-white/[0.08]" aria-hidden="true" />
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            className="space-y-12 sm:space-y-16"
-          >
+            style={{ scaleY }}
+            className="absolute left-0 top-0 bottom-0 w-px origin-top bg-gradient-to-b from-accent via-accent-2 to-accent shadow-[0_0_12px_rgb(var(--accent)/0.6)]"
+            aria-hidden="true"
+          />
+          <motion.ol variants={containerVariants} initial="hidden" whileInView="visible" viewport={viewportOnce} className="space-y-12 sm:space-y-16">
             {experience.map((exp) => (
-              <motion.div
-                variants={itemVariants}
-                key={exp.company}
-                className="relative group pl-8 sm:pl-12"
-              >
-                <div className="absolute left-0 top-6 w-4 h-4 bg-slate-950 border-2 border-cyan-400 rounded-full -translate-x-[7px] group-hover:bg-cyan-400 group-hover:scale-125 group-hover:shadow-[0_0_20px_rgba(34,211,238,0.8)] transition-all z-10"></div>
-
-                <div className="shimmer-effect bg-white/[0.03] border border-white/10 p-5 sm:p-8 rounded-2xl sm:rounded-3xl hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500">
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    <span className="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-400 text-[10px] font-bold tracking-widest rounded-md uppercase">
-                      {exp.period}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-slate-500 text-xs font-medium">
-                      <MapPin className="w-3.5 h-3.5" /> {exp.location}
+              <motion.li key={exp.company} variants={itemVariants} className="relative pl-8 sm:pl-12 group">
+                <span
+                  className="absolute left-0 top-7 w-3.5 h-3.5 -translate-x-[6.5px] rounded-full bg-bg border-2 border-accent group-hover:bg-accent group-hover:shadow-[0_0_20px_rgb(var(--accent)/0.8)] transition-all"
+                  aria-hidden="true"
+                />
+                <article className="glass-soft rounded-3xl p-6 sm:p-8">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
+                    <span className="chip !text-accent !border-accent/30 !bg-accent/10">{exp.period}</span>
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-fg-dim">
+                      <MapPin className="w-3 h-3" /> {exp.location}
                     </span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-display font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors tracking-tight">{exp.role}</h3>
-                  <p className="text-base sm:text-lg text-slate-400 font-medium mb-3 sm:mb-4">{exp.company}</p>
-                  <p className="text-sm sm:text-base text-slate-300 mb-4 sm:mb-6 leading-relaxed font-light">{exp.description}</p>
-
-                  <ul className="space-y-3">
-                    {exp.achievements.map((achievement, i) => (
-                      <li key={i} className="flex items-start gap-2 sm:gap-3 text-slate-400 text-xs sm:text-sm group-hover:text-slate-200 transition-colors">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
-                        <span className="leading-relaxed">{achievement}</span>
+                  <h3 className="font-display text-xl sm:text-2xl font-semibold tracking-tight text-fg mb-1">{exp.role}</h3>
+                  <p className="text-fg-muted font-medium mb-4">{exp.company}</p>
+                  <p className="text-sm sm:text-base text-fg-muted leading-relaxed font-light mb-5">{exp.description}</p>
+                  <ul className="space-y-2.5">
+                    {exp.achievements.map((a, i) => (
+                      <li key={i} className="flex gap-3 text-sm text-fg-muted">
+                        <span className="font-mono text-accent text-xs mt-0.5">/</span>
+                        <span className="leading-relaxed">{a}</span>
                       </li>
                     ))}
                   </ul>
-                </div>
-              </motion.div>
+                </article>
+              </motion.li>
             ))}
-          </motion.div>
+          </motion.ol>
         </div>
       </div>
     </section>
