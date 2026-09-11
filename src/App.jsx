@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { motion, MotionConfig, useScroll } from 'framer-motion';
 import Nav from './components/Nav';
 import Hero from './components/Hero';
+import Marquee from './components/Marquee';
 import Recognition from './components/Recognition';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
@@ -56,6 +57,7 @@ export default function Portfolio() {
 
         <main className="relative z-10">
           <Hero tier={tier} />
+          <Marquee />
           <Recognition />
           <Skills />
           <Projects />
