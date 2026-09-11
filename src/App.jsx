@@ -10,6 +10,7 @@ import DeepDives from './components/DeepDives';
 import Education from './components/Education';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import Preloader from './components/Preloader';
 import SceneErrorBoundary from './three/SceneErrorBoundary';
 import StaticFallback from './three/StaticFallback';
 import { getTier } from './lib/quality';
@@ -50,6 +51,7 @@ export default function Portfolio() {
 
         <div className="fixed inset-0 z-[1] pointer-events-none bg-noise opacity-[0.035] mix-blend-overlay" />
 
+        <Preloader enabled={tier !== 'off'} />
         <Nav isScrolled={isScrolled} />
 
         <main className="relative z-10">
