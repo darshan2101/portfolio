@@ -14,14 +14,14 @@ export const sceneState = {
 };
 
 export const SECTION_TARGETS = {
-  hero:        { position: [1.6, 0.1, 0],     scale: 1.0,  distortion: 0.35, tint: null },
-  recognition: { position: [2.4, 0.8, -1],    scale: 0.7,  distortion: 0.25, tint: 'award' },
-  skills:      { position: [-2.2, 0.4, -1.5], scale: 0.6,  distortion: 0.3,  tint: null },
-  projects:    { position: [2.6, -0.2, -2],   scale: 0.5,  distortion: 0.2,  tint: null },
-  experience:  { position: [-2.6, 0.2, -2],   scale: 0.5,  distortion: 0.2,  tint: null },
-  deepdives:   { position: [2.2, 0.6, -1.5],  scale: 0.6,  distortion: 0.3,  tint: null },
-  education:   { position: [-2.0, 0.0, -2],   scale: 0.45, distortion: 0.2,  tint: null },
-  contact:     { position: [0, 0.2, -0.5],    scale: 1.2,  distortion: 0.4,  tint: 'accent' },
+  hero:        { position: [1.6, 0.1, 0],     scale: 1.0,  distortion: 0.18, tint: null },
+  recognition: { position: [2.4, 0.8, -1],    scale: 0.7,  distortion: 0.14, tint: 'award' },
+  skills:      { position: [-2.2, 0.4, -1.5], scale: 0.6,  distortion: 0.16,  tint: null },
+  projects:    { position: [2.6, -0.2, -2],   scale: 0.5,  distortion: 0.12, tint: null },
+  experience:  { position: [-2.6, 0.2, -2],   scale: 0.5,  distortion: 0.12, tint: null },
+  deepdives:   { position: [2.2, 0.6, -1.5],  scale: 0.6,  distortion: 0.16,  tint: null },
+  education:   { position: [-2.0, 0.0, -2],   scale: 0.45, distortion: 0.12, tint: null },
+  contact:     { position: [0, 0.2, -0.5],    scale: 1.2,  distortion: 0.22, tint: 'accent' },
 };
 
 export const MOBILE_HERO = { position: [0.45, 1.15, 0], scale: 0.75 };

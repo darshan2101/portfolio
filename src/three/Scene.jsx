@@ -6,6 +6,8 @@ import { sceneState } from '../lib/sceneState';
 import Studio from './Studio';
 import Dust from './Dust';
 import Effects from './Effects';
+import LiquidMonolith from './LiquidMonolith';
+import PortraitPlane from './PortraitPlane';
 
 // Reports asset progress to the Preloader without importing drei into the main chunk.
 function ProgressBridge() {
@@ -56,6 +58,8 @@ export default function Scene({ tier: tierProp, onContextLost }) {
         <Suspense fallback={null}>
           <Studio />
           <Dust count={settings.dust} />
+          <LiquidMonolith settings={settings} />
+          <PortraitPlane />
           {settings.effects && <Effects />}
           <Ready />
         </Suspense>

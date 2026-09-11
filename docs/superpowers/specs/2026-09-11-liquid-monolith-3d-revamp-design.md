@@ -117,14 +117,14 @@ the boundary after mount, so scrolling never re-renders the tree.
 
 | section | position (x, y, z) | scale | distortion | tint |
 |---|---|---|---|---|
-| hero | (1.6, 0.1, 0) desktop / (0, 1.2, 0) mobile | 1.0 | 0.35 | none |
-| recognition | (2.4, 0.8, -1) | 0.7 | 0.25 | award, 15% |
-| skills | (-2.2, 0.4, -1.5) | 0.6 | 0.3 | none |
-| projects | (2.6, -0.2, -2) | 0.5 | 0.2 | none |
-| experience | (-2.6, 0.2, -2) | 0.5 | 0.2 | none |
-| deepdives | (2.2, 0.6, -1.5) | 0.6 | 0.3 | none |
-| education | (-2.0, 0.0, -2) | 0.45 | 0.2 | none |
-| contact | (0, 0.2, -0.5) | 1.2 | 0.4 | accent, 10% |
+| hero | (1.6, 0.1, 0) desktop / (0, 1.2, 0) mobile | 1.0 | 0.18 | none |
+| recognition | (2.4, 0.8, -1) | 0.7 | 0.14 | award, 15% |
+| skills | (-2.2, 0.4, -1.5) | 0.6 | 0.16 | none |
+| projects | (2.6, -0.2, -2) | 0.5 | 0.12 | none |
+| experience | (-2.6, 0.2, -2) | 0.5 | 0.12 | none |
+| deepdives | (2.2, 0.6, -1.5) | 0.6 | 0.16 | none |
+| education | (-2.0, 0.0, -2) | 0.45 | 0.12 | none |
+| contact | (0, 0.2, -0.5) | 1.2 | 0.22 | accent, 10% |
 
 Transitions use `maath/easing.damp3` with λ ≈ 4. Scroll velocity adds a transient
 distortion boost (`+ min(|velocity| / 40, 0.5)`) that decays, so fast scrolling visibly
@@ -136,7 +136,7 @@ stretches the liquid.
 
 - Geometry: `IcosahedronGeometry(1, 48)` on high tier, `(1, 24)` on low. Vertex shader
   injection via `onBeforeCompile` adds 3D simplex noise displacement:
-  `p += normal * (noise(p * 1.4 + t * 0.25) * distortion + pointerBulge)` where
+  `p += normal * (noise(p * 1.1 + t * 0.22) * distortion + pointerBulge)` (amplitudes halved after the first render read as crumpled crystal) where
   `pointerBulge = 0.25 * smoothstep(1.2, 0, distance(p, uPointerWorld))`.
 - Material: drei `MeshTransmissionMaterial` with `transmission 1`, `thickness 1.4`,
   `roughness 0.08`, `ior 1.42`, `chromaticAberration 0.06`, `anisotropy 0.2`,
